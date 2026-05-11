@@ -14,10 +14,10 @@ The library lets you write formatters as composable TypeScript instead of hand-e
 | `Formatters/lib/GUIDE.md` | Decision tree for "which factory do I reach for?" |
 | `Formatters/src/Demo_*.ts` | Annotated example formatters showing the full pipeline |
 | `Formatters/tsconfig.json` | TypeScript config for the builder |
-| `.agent/rules/` | Hard project conventions |
-| `.agent/knowledge/` | Domain notes — SP expressions, dates, aggregates, deployment, NoSQL patterns, Power Automate string ops / routing / actions |
+| `.agent/rules/` | Mandatory operating rules — builder-pattern enforcement, deployment constraints, JSON formatting |
+| `.agent/knowledge/` | Domain notes — SP expressions, elements, styling, dates, aggregates, deployment, NoSQL patterns, Power Automate string ops / routing / actions |
 | `.agent/patterns/` | Reusable techniques — zero-whitespace rule, SP card hover, friendly date formatter, split-twice template engine, dynamic aggregate math, hierarchical term routing, ... |
-| `.agent/skills/` | Packaged how-tos invocable by name — `sharepoint-list-formatting`, `pnp-deployment`, `theme-colors`, `ctrlx-ontology`, ... |
+| `.agent/skills/` | Packaged how-tos invocable by name — `sharepoint-list-formatting`, `pnp-deployment`, `theme-colors`, `power-automate-actions`, ... |
 | `.agent/workflows/` | Multi-step playbooks — scaffold a formatter, deploy a formatter, troubleshoot PnP |
 | `CLAUDE.md` | Agent operating instructions for this workspace |
 
@@ -68,7 +68,8 @@ See [`Formatters/lib/GUIDE.md`](Formatters/lib/GUIDE.md) for the full decision t
 - **Never edit JSON in `Formatters/dist/` directly.** It's compiler output. Edit the `.ts` source and rebuild.
 - **Zero-whitespace rule** for SP expressions — see `.agent/patterns/zero-whitespace-rule.md`. `compile()` sanitizes automatically, but it's a real SharePoint renderer constraint worth understanding.
 - **PnP deployment** uses direct CSOM (`$field.CustomFormatter = [string]$json; $field.Update()`) rather than `Set-PnPField -Values`, which has known JSON parsing bugs in PnP v1.12.0. See `.agent/knowledge/deployment.md`.
-- Full operating rules in `CLAUDE.md`.
+- **Rev tracking** lives in `_debug` metadata — `compile()` injects `compiledFrom` / `compiledAt` / `lastModified` at the JSON root of every emitted formatter. The `revLabel()` factory is opt-in for cases where you want a visible on-screen rev tag.
+- Full operating rules in `.agent/rules/formatting_rules.md` and `.agent/rules/environment-constraints.md`.
 
 ---
 
