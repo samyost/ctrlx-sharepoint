@@ -50,7 +50,7 @@ Props accept theme tokens directly — `gap: 'sm'` resolves to `'8px'`.
 | Empty-state message | `emptyState(hasDataExpr, message)` | Shown when `hasDataExpr` is false |
 | Auth visibility gate | `dualContainer(authExpr, interactive, readOnly)` | Mutually exclusive siblings |
 | Top-right action icons | `actionCluster(actions)` | Absolute-positioned; pass links or row actions |
-| Cache-busting rev tag | `revLabel(version)` | Required — triggers validation warning if missing |
+| Cache-busting rev tag (optional) | `revLabel(version)` | Adds a visible `rev-N` span. Rev info is also injected automatically into `_debug` at compile time, so a visible label is only needed if you want to see it on screen. |
 | Loading spinner | `progressSpinnerFlat(size?, colorExpr?)` | Rotating ProgressLoopOuter icon |
 | Key/value spec table | `dataTable(rows, options?)` | CSS `display: table` layout; `table-layout: fixed` |
 
@@ -94,21 +94,23 @@ For cards that need relative positioning (for `actionCluster`), optional termina
 
 ```ts
 // Column or row formatter
-const el = VStack({ gap: 'sm' }, [ statusBadge(...), persona(...), revLabel(4) ]);
+const el = VStack({ gap: 'sm' }, [ statusBadge(...), persona(...) ]);
 compile(el, 'MyList_ColumnName');
 
 // Gallery/tile formatter
-const tile = buildQuadrantTile(config, { rev: 2 });
+const tile = buildQuadrantTile(config, { width: 360, height: 300 });
 compileTile(tile, 'MyList_GalleryView');
 ```
 
 `compile()` and `compileTile()` both:
 - Run `validate()` and print any warnings
-- Inject `_debug` metadata (source path, compile time)
+- Inject `_debug` metadata at the root: `compiledFrom`, `compiledAt`, `lastModified`
 - Strip spaces from SP expressions (`sanitizeForCSOM`)
 - Skip the write if output is unchanged (preserves git history)
 
-**Validation catches:** Unicode characters, misplaced `_comment`, missing `revLabel`.
+**Validation catches:** Unicode characters, misplaced `_comment`, and CSS properties silently stripped by SP's renderer (`gap`, `pointer-events`, `aspect-ratio`, `transition`, custom CSS vars, …).
+
+Rev tracking lives in `_debug` automatically — no visible `revLabel` is required in the formatter tree. Use `revLabel()` only when you want a visible on-screen tag.
 
 See: `.agent/knowledge/sp-expressions.md` — Zero Whitespace Rule  
 See: `.agent/knowledge/deployment.md` — CSOM deployment constraints

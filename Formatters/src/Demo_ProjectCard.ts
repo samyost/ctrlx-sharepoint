@@ -17,7 +17,6 @@
 import { theme } from '../lib/theme';
 import {
   statusBadge,
-  revLabel,
   userAvatar,
   actionCluster,
   flexContainer,
@@ -28,8 +27,6 @@ import type { StatusMap } from '../lib/types';
 
 
 // ─── Configuration ────────────────────────────────────────────────────────────
-
-const REV = 1;
 
 // Set this to your tenant + site path before deploying.
 // Example: 'https://contoso.sharepoint.com/sites/your-site'
@@ -47,7 +44,7 @@ const STATUS_MAP: StatusMap = {
 
 // ─── Build the Formatter ──────────────────────────────────────────────────────
 
-// Header row: Title + Rev label
+// Header row: Title
 const headerRow = flexContainer('row', [
   {
     elmType: 'span',
@@ -57,7 +54,6 @@ const headerRow = flexContainer('row', [
       ...theme.typography.subtitle,
     },
   },
-  revLabel(REV),
 ], {
   'align-items': 'baseline',
   gap: theme.spacing.sm,

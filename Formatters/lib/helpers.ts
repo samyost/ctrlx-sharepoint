@@ -153,12 +153,7 @@ export function validate(jsonObj: SPElement): string[] {
   // 2. _comment outside of style objects (recursive check)
   checkCommentPlacement(jsonObj, '', warnings);
 
-  // 3. Missing rev label
-  if (!jsonStr.includes('rev-') && !jsonStr.match(/"v\d+-/)) {
-    warnings.push('No rev label found. Use components.revLabel() or "vXX-YYYYMMDD" for cache-busting verification.');
-  }
-
-  // 4. Unsupported CSS properties (silently stripped by SP renderer)
+  // 3. Unsupported CSS properties (silently stripped by SP renderer)
   checkStrippedProperties(jsonObj, '', warnings);
 
   return warnings;
