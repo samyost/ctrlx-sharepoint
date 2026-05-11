@@ -4,9 +4,6 @@ trigger: always_on
 
 # Environment Constraints
 
-## SharePoint Site
-- **Site URL:** `https://mympc.sharepoint.com/sites/mplxcontrols/`
-
 ## Deployment Rules
 - **Always use script files** — never run inline PowerShell commands for deployments. Write a `.ps1` file and run it with pwsh.
 - **MANDATORY LOGGING:** You **MUST ALWAYS** output script and PowerShell execution logs to a dedicated folder (e.g., `.logs/deploy.log`) and then explicitly use `view_file` to read the file. **Log files must NEVER go directly in the `Formatters/dist/` folder or the root project directory** to avoid cluttering views and directories. The standard agent console output will swallow inner script exceptions. You must do this for **every single PowerShell script run** to confirm success or capture true errors. Create the folder if it doesn't exist (e.g. `mkdir -p .logs` or `New-Item -ItemType Directory -Force -Path .logs`).
@@ -15,11 +12,6 @@ trigger: always_on
 ## Authentication
 - **PnP v1.12.0 with `-UseWebLogin`** 
 - **Do NOT upgrade PnP to v3.x** — it removes the built-in multi-tenant app needed for `-UseWebLogin`.
-
-## Dataverse
-- Dataverse MCP is available for querying tables directly (no auth friction).
-- `systemuser` table does NOT contain `department`.
-- `aaduser` table is virtual and CANNOT be queried via Dataverse SQL.
 
 ## JSON Formatting Enforcement
 - **Typically the Agent should not edit or create raw JSON format files directly**. Instead, use the TypeScript builder pattern: write a `.ts` script in `Formatters/src/` utilizing `Formatters/lib/` and compile it to `.json` in `Formatters/dist/` (`npx tsx Formatters/src/YourScript.ts`).

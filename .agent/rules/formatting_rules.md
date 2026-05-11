@@ -23,9 +23,9 @@ lib/theme.ts + lib/components.ts + lib/types.ts
 ## Rules
 
 ### 1. Never Write Raw JSON
-- **NEVER** create or edit `.json` files in `Formatters/` directly.
+- **NEVER** create or edit `.json` files in `Formatters/` directly. They are compiler output.
 - Always write a `.ts` builder script in `Formatters/src/`.
-- The builder must import from `../lib/theme`, `../lib/components`, and `../lib/helpers`.
+- The builder imports primitives, components, helpers, and theme from `'../lib'` — `index.ts` re-exports the full public surface.
 
 ### 2. Always Use TypeScript
 - All builder scripts and library files use `.ts` extension.
@@ -37,14 +37,13 @@ lib/theme.ts + lib/components.ts + lib/types.ts
 - Hex values from `theme.colors` are acceptable ONLY in: SVG fills, Power Automate, external integrations.
 - Never hardcode hex colors that aren't in `theme.colors`.
 
-### 4. Use Component Factories
-- Before writing raw JSON nodes, check if a factory exists in `components.ts`:
-  - `statusBadge()`, `dualContainer()`, `userAvatar()`, `revLabel()`, `actionCluster()`, `emptyState()`, `inlineEdit()`, `flexContainer()`, `cardRoot()`, `columnRef()`
-- If a new reusable pattern emerges, add it to `components.ts` — don't duplicate.
+### 4. Use the Library
+Before writing raw JSON nodes, check if the lib already covers it. Current inventory:
+- **Layout primitives** (`primitives.ts`): `VStack`, `HStack`, `Box`, `Text`
+- **SP component factories** (`components.ts`): `statusBadge`, `persona`, `userAvatar`, `inlineEdit`, `pillsBadge`, `breadcrumbPath`, `columnRef`, `memberCountBadge`, `emptyState`, `dualContainer`, `actionCluster`, `revLabel`, `progressSpinnerFlat`, `dataTable`, `button`, `flexContainer`, `cardRoot`
+- **Tile builder** (`quadrant.ts`): `buildQuadrantTile()` for 2×2 gallery cards
 
-### 5. Rev Stamp Every Formatter
-- Every formatter MUST include a `revLabel(N)` node.
-- Increment the version number on each deployment.
+See `Formatters/lib/GUIDE.md` for the decision tree. If a new reusable pattern emerges, add it to the appropriate lib file — don't duplicate.
 
 ### 6. Compile to /dist
 - Run `npx tsx Formatters/src/YourScript.ts` to produce output in `Formatters/dist/`.
@@ -52,18 +51,11 @@ lib/theme.ts + lib/components.ts + lib/types.ts
 - **Workflow:** Use `/scaffold-formatter` when creating a new builder script to get the correct boilerplate and imports.
 
 ### 7. Deploy via Script (Columns & List Views ONLY)
-- **NEVER** paste Column JSON or standard List View JSON into SharePoint's Advanced Mode editor. Always deploy using: `pwsh -File Scripts/Deploy-Format.ps1`
+- **NEVER** paste Column JSON or standard List View JSON into SharePoint's Advanced Mode editor. Always deploy via a PowerShell script that uses direct CSOM. See `.agent/knowledge/deployment.md` and the `/deploy-formatter` workflow for the canonical PnP + CSOM pattern.
 - **GALLERY VIEWS EXCEPTION:** You **CANNOT** deploy Gallery View formatters programmatically via CSOM or PnP. SharePoint will silently revert them on page load. **Gallery View JSON MUST be copied from `dist/` and pasted into Advanced Mode in the SharePoint UI by the human user.** If you compile a Gallery View, DO NOT attempt to script its deployment. Instead, halt and explicitly ask the user to copy/paste the JSON to avoid getting stuck in a silent-failure loop.
-- For List view formatters, use the `-ViewName` parameter (uses CSOM direct to avoid bracket stripping).
 - **CSOM Throttling:** When deploying formatters to multiple columns or views in a loop using CSOM, you **MUST** insert a hard delay (e.g., `Start-Sleep -Seconds 1`) between iterations to prevent SharePoint from throwing 429 Throttling exceptions, because bypassing PnP cmdlets also bypasses their built-in retry logic.
 - **Workflow:** Use `/deploy-formatter` for the exact compilation and deployment execution sequence.
 - **Workflow:** Use `/troubleshoot-pnp` if you encounter "Access Denied" or Microsoft Graph conditional access errors during deployment.
-
-### 8. forEach Guardrails
-- **NEVER** use `forEach` with `split()` in column or row formatters — it kills the entire formatter.
-- `forEach` + `split()` ONLY works inside `customCardProps`.
-- **Iterator Naming:** Every iterator in a `forEach` loop MUST be prepended with an underscore (e.g., `_item`, `_user`).
-- Always use `wrapForEach()` from helpers which wraps field references in `toString()`.
 
 ### 9. CSOM Encoding
 - Avoid Unicode characters in JSON strings — use ASCII equivalents.
@@ -137,12 +129,12 @@ Status column formatter       →  Gallery tile card
 
 ### 14. Builder Script Naming Convention
 
-Builder scripts in `src/` should mirror the column they target:
+Builder scripts in `src/` follow `{List}_{Column}.ts` so the source file mirrors its deployment target:
 
 | Script | Targets | Type |
 |---|---|---|
-| `Projects_ProjectUI.ts` | `ProjectUI` column on Projects list | Dummy UI column |
-| `Tasks_AssignedToUI.ts` | `AssignedToUI` column on Tasks list | Field-specific UI |
-| `Tasks_BoardView.ts` | View formatter on Tasks "Board" view | View formatter |
-| `All_StatusBadge.ts` | `Status` column (shared across lists) | Real data column |
+| `MyList_ItemUI.ts` | `ItemUI` column on `MyList` | Dummy UI column |
+| `MyList_AssignedToUI.ts` | `AssignedToUI` column on `MyList` | Field-specific UI column |
+| `MyList_BoardView.ts` | A view formatter on a list view | View formatter |
+| `All_StatusBadge.ts` | A `Status` column reused across multiple lists | Real data column |
 
