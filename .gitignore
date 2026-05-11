@@ -1,0 +1,39 @@
+# ─── Build / compiled output ──────────────────────────────────────────────────
+# Compile from Formatters/src/*.ts with `npx tsx ...` to regenerate.
+Formatters/dist/
+Formatters/build/
+*.tsbuildinfo
+
+# ─── Scratch / backups ────────────────────────────────────────────────────────
+Formatters/bak/
+Formatters/tmp/
+.logs/
+*.log
+
+# ─── Node ─────────────────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ─── OS ───────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── Editor / IDE ─────────────────────────────────────────────────────────────
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
+# ─── Claude Code (per-machine) ────────────────────────────────────────────────
+# Keep .claude/settings.json (shared project allow-list).
+# Ignore the per-machine local override.
+.claude/settings.local.json
+
+# ─── PowerShell / deploy artifacts ────────────────────────────────────────────
+*.pnpcache
+deploy.log

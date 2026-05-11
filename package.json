@@ -1,0 +1,21 @@
+{
+  "name": "ctrlx-sharepoint",
+  "version": "0.1.0",
+  "private": true,
+  "description": "TypeScript builder pattern for SharePoint Online list/column/view formatters, plus an agent-consumable knowledge base.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/samyost/ctrlx-sharepoint.git"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build:demo-card": "tsx Formatters/src/Demo_ProjectCard.ts",
+    "build:demo-quadrant": "tsx Formatters/src/QuadrantCard_Demo.ts",
+    "typecheck": "tsc --noEmit -p Formatters/tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.4.0"
+  }
+}
